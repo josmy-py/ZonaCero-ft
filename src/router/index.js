@@ -63,15 +63,15 @@ const router = createRouter({
         },
 
         {
-          path:'catalogos',
-          name:'admin-catalogos',
-          component: () => import('@/views/admin/Catalogos.vue')
-        },
-        
-        {
           path:'catalogos/categorias',
           name:'admin-categorias',
           component: () => import('@/views/admin/Categorias.vue')
+        },
+        
+        {
+          path:'catalogos/marcas',
+          name:'admin-marcas',
+          component: () => import('@/views/admin/Marcas.vue')
         },
         
 

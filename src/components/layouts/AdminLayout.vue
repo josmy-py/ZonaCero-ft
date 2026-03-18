@@ -1,5 +1,5 @@
   <template>
-  <div class="min-h-screen flex flex-col bg-gray-100">
+  <div class="min-h-screen flex flex-col bg-gray-900">
     <!-- Inyectamos componente AdminNavbar -->
     <AdminNavbar @toggleSidebar="toggleSidebar" />
 
@@ -19,7 +19,7 @@
       />
 
       <!-- En main se renderizan los componentes con las opciones y rutas -->
-      <main class="flex-1 p-6 overflow-y-auto">
+      <main class="flex-1 p-6 overflow-y-auto bg-gray-900">
         <router-view />
       </main>
     </div>

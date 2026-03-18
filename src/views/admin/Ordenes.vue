@@ -24,7 +24,7 @@ const showDetail = ref(false)
 const showEstado = ref(false)
 
 const loadOrders = async () => {
-    const res = await api.get('/orders')
+    const res = await api.get('/pedidos')
     orders.value = res.data
 }
 

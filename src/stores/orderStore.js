@@ -9,6 +9,9 @@ export const useOrderStore = defineStore("order", {
     loading: false,
   }),
 
+  // Persistencia del carrito
+  persist: true,
+
   getters: {
     total: (state) => state.items.reduce((acc, item) => acc + item.precio * item.cantidad, 0),
 
@@ -56,7 +59,7 @@ export const useOrderStore = defineStore("order", {
     async confirmOrder(order) {
       this.loading = true;
       try {
-        const response = await api.post(`/orders`, order);
+        const response = await api.post(`/pedidos`, order);
         return response;
       } finally {
         this.loading = false;
@@ -68,7 +71,7 @@ export const useOrderStore = defineStore("order", {
       this.loading = true;
 
       try {
-        const { data } = await api.get("/orders", {
+        const { data } = await api.get("/pedidos", {
           params: {
             user_id: authStore.user.id,
           },

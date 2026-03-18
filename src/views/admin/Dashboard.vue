@@ -2,9 +2,9 @@
   <div class="space-y-8">
     <!-- Encabezado del Dashboard -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <h2 class="text-2xl font-bold text-gray-800">Dashboard Administrativo</h2>
+      <h2 class="text-2xl font-bold text-white">Dashboard Zona Cero</h2>
 
-      <span class="text-sm font-bold text-gray-500"> Año {{ anioActual }} </span>
+      <span class="text-sm font-bold text-gray-400"> Año {{ anioActual }} </span>
     </div>
 
     <!-- Grid de tailwind para pintar las card con los datos de las ordenes por estado -->
@@ -91,12 +91,12 @@
         <h3 class="panel-title">Top Productos Vendidos</h3>
 
         <ul class="space-y-3">
-          <li v-for="p in topProductos" :key="p.nombre" class="flex justify-between border-b pb-2">
-            <span class="text-gray-700">
+          <li v-for="p in topProductos" :key="p.nombre" class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-300">
               {{ p.nombre }}
             </span>
 
-            <span class="font-semibold">
+            <span class="font-semibold text-blue-400">
               {{ p.vendidos }}
             </span>
           </li>
@@ -108,24 +108,43 @@
     <div class="panel">
       <h3 class="panel-title mb-4">Últimas Órdenes</h3>
 
-      <DataTable :value="ultimasOrdenes" responsiveLayout="scroll" class="p-datatable-sm">
-        <Column field="correlativo" header="Orden" />
+      <DataTable :value="ultimasOrdenes" responsiveLayout="scroll" class="p-datatable-sm custom-dark-table">
+        <Column field="correlativo" header="Orden">
+          <template #body="slotProps">
+            <span class="text-white font-medium">#{{ slotProps.data.correlativo }}</span>
+          </template>
+        </Column>
 
         <Column header="Cliente">
           <template #body="slotProps">
-            {{ slotProps.data.user?.name }}
+            <span class="text-gray-300">{{ slotProps.data.user?.name }}</span>
           </template>
         </Column>
 
         <Column field="total" header="Total">
           <template #body="slotProps">
-            {{ formatoMoneda(slotProps.data.total) }}
+            <span class="text-green-400 font-semibold">{{ formatoMoneda(slotProps.data.total) }}</span>
           </template>
         </Column>
 
-        <Column field="estado" header="Estado" />
+        <Column field="estado" header="Estado">
+          <template #body="slotProps">
+            <span :class="{
+              'text-yellow-400': slotProps.data.estado === 'pendiente',
+              'text-green-400': slotProps.data.estado === 'pagada',
+              'text-red-400': slotProps.data.estado === 'cancelada',
+              'text-blue-400': slotProps.data.estado === 'entregada'
+            }" class="font-medium uppercase text-xs">
+              {{ slotProps.data.estado }}
+            </span>
+          </template>
+        </Column>
 
-        <Column field="fecha" header="Fecha" />
+        <Column field="fecha" header="Fecha">
+          <template #body="slotProps">
+            <span class="text-gray-400">{{ slotProps.data.fecha }}</span>
+          </template>
+        </Column>
       </DataTable>
     </div>
   </div>
@@ -186,9 +205,14 @@ const loadVentasMes = async () => {
         {
           label: "Ventas",
           data,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
           borderWidth: 3,
           tension: 0.4,
           fill: true,
+          pointBackgroundColor: '#3b82f6',
+          pointBorderColor: '#fff',
+          pointRadius: 4,
         },
       ],
     },
@@ -196,6 +220,21 @@ const loadVentasMes = async () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#9ca3af' }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        },
+        y: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        }
+      }
     },
   });
 };
@@ -220,7 +259,10 @@ const loadVentasAnio = async () => {
         {
           label: "Ventas por Año",
           data,
+          backgroundColor: '#8b5cf6',
+          borderColor: '#7c3aed',
           borderWidth: 1,
+          borderRadius: 8,
         },
       ],
     },
@@ -228,6 +270,21 @@ const loadVentasAnio = async () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#9ca3af' }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        },
+        y: {
+          ticks: { color: '#9ca3af' },
+          grid: { color: '#374151' }
+        }
+      }
     },
   });
 };
@@ -255,7 +312,7 @@ onMounted(() => {
 
 <style scoped>
 .card {
-  @apply bg-white p-5 rounded-xl shadow-sm flex items-center gap-4 hover:shadow-md transition;
+  @apply bg-gray-800 p-5 rounded-xl shadow-sm flex items-center gap-4 hover:shadow-md transition;
 }
 
 .icon {
@@ -263,18 +320,38 @@ onMounted(() => {
 }
 
 .label {
-  @apply text-gray-500 text-sm;
+  @apply text-gray-400 text-sm;
 }
 
 .value {
-  @apply font-bold text-xl text-gray-800;
+  @apply font-bold text-xl text-white;
 }
 
 .panel {
-  @apply bg-white rounded-xl shadow-sm p-6;
+  @apply bg-gray-800 rounded-xl shadow-sm p-6;
 }
 
 .panel-title {
-  @apply text-lg font-semibold text-gray-700 mb-3;
+  @apply text-lg font-semibold text-white mb-3;
+}
+
+/* Estilos para tabla oscura */
+:deep(.custom-dark-table .p-datatable-thead > tr > th) {
+  background: #1f2937 !important;
+  color: #9ca3af !important;
+  border-color: #374151 !important;
+}
+
+:deep(.custom-dark-table .p-datatable-tbody > tr) {
+  background: #1f2937 !important;
+  color: #d1d5db !important;
+}
+
+:deep(.custom-dark-table .p-datatable-tbody > tr > td) {
+  border-color: #374151 !important;
+}
+
+:deep(.custom-dark-table .p-datatable-tbody > tr:hover) {
+  background: #374151 !important;
 }
 </style>
