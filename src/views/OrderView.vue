@@ -30,13 +30,13 @@
 
         <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
           <tr>
-            <th class="px-6 py-4">Item</th>
-            <th class="px-6 py-4">Producto</th>
-            <th class="px-6 py-4">Marca</th>
-            <th class="px-6 py-4 text-center">Cantidad</th>
-            <th class="px-6 py-4 text-right">Precio</th>
-            <th class="px-6 py-4 text-right">Subtotal</th>
-            <th class="px-6 py-4 text-center">Eliminar</th>
+            <th class="px-6 py-4 font-bold">Item</th>
+            <th class="px-6 py-4 font-bold">Producto</th>
+            <th class="px-6 py-4 font-bold">Marca</th>
+            <th class="px-6 py-4 text-center font-bold">Cantidad</th>
+            <th class="px-6 py-4 text-right font-bold">Precio</th>
+            <th class="px-6 py-4 text-right font-bold">Subtotal</th>
+            <th class="px-6 py-4 text-center font-bold">Eliminar</th>
           </tr>
         </thead>
 
@@ -46,20 +46,20 @@
             :key="item.id"
             class="border-b hover:bg-gray-50 transition"
           >
-            <td class="px-6 py-4 font-medium">
+            <td class="px-6 py-4 font-bold">
               {{ index + 1 }}
             </td>
 
             <td class="px-6 py-4">
-              <div class="font-semibold">
+              <div class="font-bold">
                 {{ item.nombre }}
               </div>
-              <div class="text-gray-500 text-xs">
+              <div class="text-gray-500 text-xs font-medium">
                 {{ item.descripcion }} - {{ item.modelo }}
               </div>
             </td>
 
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 font-medium">
               {{ item.marca }}
             </td>
 
@@ -71,7 +71,7 @@
                     class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300"
                     >-</button>
 
-                    <span class="font-semibold w-8 text-center">
+                    <span class="font-bold w-8 text-center text-black">
                     {{ item.cantidad }}
                     </span>
 
@@ -83,11 +83,11 @@
             </td>
 
             <td class="px-6 py-4 text-right">
-              {{ formatCurrency(item.precio) }}
+              <span class="text-green-600 font-semibold">{{ formatCurrency(item.precio) }}</span>
             </td>
 
             <td class="px-6 py-4 text-right font-semibold">
-              {{ formatCurrency(item.precio * item.cantidad) }}
+              <span class="text-green-600">{{ formatCurrency(item.precio * item.cantidad) }}</span>
             </td>
 
             <td class="px-6 py-4 text-center">
@@ -105,22 +105,22 @@
       <!-- Totales -->
       <div class="p-8 bg-gray-50">
 
-        <div class="flex justify-end">
+          <div class="flex justify-end">
           <div class="w-full md:w-1/3 space-y-3 text-sm">
 
-            <div class="flex justify-between">
+            <div class="flex justify-between font-bold">
               <span>Subtotal (sin IVA)</span>
-              <span>{{ formatCurrency(subtotalSinIVA) }}</span>
+              <span class="text-blue-600 font-bold">{{ formatCurrency(subtotalSinIVA) }}</span>
             </div>
 
-            <div class="flex justify-between">
+            <div class="flex justify-between font-bold">
               <span>IVA (13%)</span>
-              <span>{{ formatCurrency(iva) }}</span>
+              <span class="text-orange-600 font-bold">{{ formatCurrency(iva) }}</span>
             </div>
 
             <div class="flex justify-between text-xl font-bold border-t pt-3 mt-3">
-              <span>Total</span>
-              <span>{{ formatCurrency(orderStore.total) }}</span>
+              <span class="font-bold">Total</span>
+              <span class="text-green-600 font-bold">{{ formatCurrency(orderStore.total) }}</span>
             </div>
 
           </div>
@@ -251,7 +251,7 @@ const confirm = async () => {
       subtotal: subtotalSinIVA.value,
       impuesto: iva.value,
       total: orderStore.total,
-      items: orderStore.items.map(item => ({
+      detalles: orderStore.items.map(item => ({
         producto_id: item.id,
         cantidad: item.cantidad
       }))
@@ -270,9 +270,9 @@ const confirm = async () => {
     Swal.close()
 
     // VALIDACIÓN CORRECTA
-    if (response.status === 201) {
+    if (response.status === 200 || response.status === 201) {
 
-      const { message, order } = response.data
+      const { message, pedido } = response.data
 
       await Swal.fire({
         icon: 'success',
@@ -284,7 +284,7 @@ const confirm = async () => {
 
       router.push({
         path: '/',
-        query: { id: order.id }
+        query: { id: pedido.id }
       })
 
     }
@@ -301,4 +301,4 @@ const confirm = async () => {
   }
 }
 
-</script> 
+</script>

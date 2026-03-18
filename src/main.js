@@ -2,27 +2,30 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
-//importamos el plugin de pinia que mantiene la persistencia del estado
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-import setupPrimeVue from './utils/primevue'
+// 1. PrimeVue Core
+import PrimeVue from 'primevue/config';
 
-// 1. IMPORTAR ESTILOS DE Tailwind
-import './assets/main.css' 
+// 2. IMPORTAR ESTILOS (El orden importa)
+import './assets/main.css' // Tu Tailwind
+import 'primevue/resources/themes/lara-dark-blue/theme.css' // TEMA OSCURO GAMING
+import 'primevue/resources/primevue.min.css'              // Estilos base
+import 'primeicons/primeicons.css'                       // Iconos
 
-// 2. ESTILOS DE PRIMEVUE
-import 'primevue/resources/themes/saga-blue/theme.css'
-import 'primevue/resources/primevue.css'
-import 'primeicons/primeicons.css'
-
+// Crear la aplicación ANTES de usar app.use
 const app = createApp(App)
 
-setupPrimeVue(app)
-//creamos instancia de pinia
+// 3. Configuración de Pinia
 const pinia = createPinia()
-//hacemos que pinia use el plugin de persistencia del estado
 pinia.use(piniaPluginPersistedstate)
-//hacemos que el objeto vue(app) use pinia
+
+// 4. Plugins y Middlewares
 app.use(pinia)
 app.use(router)
+
+// Configuración de PrimeVue (Sin el preset Aura que te da error)
+app.use(PrimeVue, { ripple: true })
+
+// 5. Montar la app
 app.mount('#app')

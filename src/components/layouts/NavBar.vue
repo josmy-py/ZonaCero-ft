@@ -1,151 +1,197 @@
 <template>
-  <nav class="bg-primary text-white shadow-lg fixed w-full z-50">
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-      <router-link to="/" class="text-2xl font-bold tracking-wide flex items-center gap-2">
-        💻 <span>TechStore</span>
-      </router-link>
-
-      <div class="hidden md:flex gap-8 font-medium items-center">
-        <router-link to="/" class="hover:text-blue-200 transition">Inicio</router-link>
-        <a href="#" class="hover:text-blue-200 transition">Categorías</a>
-        <a href="#" class="hover:text-blue-200 transition">Ofertas</a>
-
+  <div>
+    <!-- Barra superior -->
+    <div class="bg-black text-gray-400 text-sm px-6 py-2 flex justify-between items-center border-b border-gray-700">
+      <div class="flex gap-6">
+        <span class="cursor-pointer hover:text-white transition">Contactanos</span>
+        <span class="cursor-pointer hover:text-white transition">Ayuda</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <!-- Botón Admin - solo si es admin -->
         <router-link
-          v-if="authStore.isAuthenticated && authStore.isCliente"
-          to="/mis-ordenes"
-          class="flex items-center gap-2 text-white hover:text-blue-600"
+          v-if="authStore.isAdmin"
+          to="/admin/dashboard"
+          class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-full transition duration-300 font-medium"
         >
-          <i class="pi pi-shopping-bag"></i>
-          Mis Órdenes
+          <span>⚙️</span>
+          <span>Admin</span>
         </router-link>
 
-        <router-link
-          v-if="authStore.isAuthenticated && authStore.isCliente"
-          to="/order"
-          class="relative ml-6 hover:text-blue-200 transition"
+        <!-- Botón Iniciar Sesión -->
+        <button
+          v-if="!authStore.isAuthenticated"
+          @click="showLoginModal = true"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full transition duration-300 font-medium"
         >
-          <i class="pi pi-shopping-cart text-2xl"></i>
-          <!--Contador de productos -->
+          <span>👤</span>
+          <span>Iniciar sesión</span>
+        </button>
+
+        <!-- Usuario logueado -->
+        <div v-else class="flex items-center gap-4">
+          <span class="text-white">Hola, {{ authStore.user?.name || 'Usuario' }}</span>
+          <button
+            @click="handleLogout"
+            class="text-gray-400 hover:text-white transition"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+
+        <!-- Ver Carrito - solo si está autenticado -->
+        <button
+          v-if="authStore.isAuthenticated"
+          @click="$router.push('/order')"
+          class="cursor-pointer hover:text-white transition flex items-center gap-1"
+        >
+          <span>🛒</span>
+          <span>Ver Carrito</span>
           <span
             v-if="orderStore.totalItems > 0"
-            class="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5"
+            class="bg-red-500 text-white text-xs px-1.5 rounded-full"
+          >
+            {{ orderStore.totalItems }}
+          </span>
+        </button>
+        <button
+          v-else
+          @click="showLoginModal = true"
+          class="cursor-pointer hover:text-white transition"
+        >
+          Ver Carrito
+        </button>
+
+        <!-- Mi Cartera - podría ser mis órdenes -->
+        <router-link
+          v-if="authStore.isAuthenticated"
+          to="/mis-ordenes"
+          class="cursor-pointer hover:text-white transition"
+        >
+          Mis Órdenes
+        </router-link>
+      </div>
+    </div>
+
+    <!-- Barra principal del navbar -->
+    <div class="bg-black text-gray-400 px-6 py-4 flex items-center justify-between">
+      <!-- LOGO -->
+      <router-link to="/" class="text-2xl font-bold text-white hover:text-blue-400 transition">
+        Zona Cero
+      </router-link>
+
+      <!-- Barra de búsqueda -->
+      <div class="flex items-center flex-1 max-w-xl mx-8">
+        <div class="bg-gray-800 px-4 py-2 flex items-center gap-3 w-full rounded-lg">
+          <span class="text-gray-400">🔍</span>
+          <input
+            type="text"
+            placeholder="Buscar Productos de Tecnología..."
+            class="bg-transparent outline-none text-white placeholder-gray-400 flex-1"
+          />
+        </div>
+      </div>
+
+      <!-- Icons -->
+      <div class="flex items-center gap-6 text-xl">
+        <!-- Favoritos - por ahora link decorativo -->
+        <router-link to="/" class="cursor-pointer hover:text-white transition" title="Favoritos">
+          ❤️
+        </router-link>
+
+        <!-- Carrito con contador de items -->
+        <router-link
+          v-if="authStore.isAuthenticated"
+          to="/order"
+          class="relative cursor-pointer hover:text-white transition"
+          title="Carrito"
+        >
+          <span>🛒</span>
+          <span
+            v-if="orderStore.totalItems > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
           >
             {{ orderStore.totalItems }}
           </span>
         </router-link>
 
-        <div class="flex gap-4 ml-6 items-center">
-          <template v-if="!authStore.isAuthenticated">
-            <router-link
-              to="/login"
-              class="px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-primary transition"
-            >
-              Iniciar sesión
-            </router-link>
-            <router-link
-              to="/register"
-              class="px-4 py-2 bg-white text-primary rounded-lg font-semibold hover:bg-gray-200 transition"
-            >
-              Registrarse
-            </router-link>
-          </template>
-
-          <template v-else>
-            <span class="text-white font-semibold border-r border-blue-400 pr-4">
-              Hola, {{ authStore.user?.name }}
-            </span>
-            <button
-              @click="authStore.logout()"
-              class="text-amber-400 hover:text-amber-300 font-bold transition"
-            >
-              Cerrar sesión
-            </button>
-          </template>
-        </div>
+        <!-- Si no está autenticado, mostrar modal de login -->
+        <button
+          v-else
+          @click="showLoginModal = true"
+          class="cursor-pointer hover:text-white transition"
+          title="Iniciar sesión para ver carrito"
+        >
+          🛒
+        </button>
       </div>
-
-      <button @click="toggleMenu" class="md:hidden text-2xl focus:outline-none" aria-label="Menu">
-        <i :class="isOpen ? 'pi pi-times' : 'pi pi-bars'"></i>
-      </button>
     </div>
 
-    <transition name="slide">
-      <div
-        v-if="isOpen"
-        class="md:hidden bg-primary-dark border-t border-blue-800 px-6 py-6 space-y-6 shadow-xl"
-      >
-        <router-link to="/" @click="isOpen = false" class="block hover:text-blue-200 transition"
-          >Inicio</router-link
-        >
-        <a href="#" class="block hover:text-blue-200 transition">Categorías</a>
-        <a href="#" class="block hover:text-blue-200 transition">Ofertas</a>
-
-        <div class="flex flex-col gap-3 pt-4 border-t border-blue-400">
-          <template v-if="!authStore.isAuthenticated">
-            <router-link
-              to="/login"
-              @click="isOpen = false"
-              class="px-4 py-2 border border-white rounded-lg text-center hover:bg-white hover:text-primary transition"
-            >
-              Iniciar Sesión
-            </router-link>
-            <router-link
-              to="/register"
-              @click="isOpen = false"
-              class="px-4 py-2 bg-white text-primary rounded-lg text-center font-semibold"
-            >
-              Registrarse
-            </router-link>
-          </template>
-
-          <template v-else>
-            <div class="flex flex-col gap-4">
-              <span class="text-white font-bold text-lg text-center">
-                {{ authStore.user?.name }}
-              </span>
-              <button
-                @click="handleLogout"
-                class="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition"
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          </template>
+    <!-- Menú de categorías -->
+    <div class="bg-gray-800 text-white px-6 py-3 flex gap-8">
+      <div class="relative group">
+        <span class="cursor-pointer hover:text-white transition flex items-center gap-1">
+          Categorías <span class="text-xs">▼</span>
+        </span>
+        <!-- Dropdown de categorías desde la base de datos -->
+        <div class="absolute top-full left-0 bg-gray-900 text-white py-2 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 min-w-48">
+          <a
+            v-for="categoria in categorias"
+            :key="categoria.id"
+            href="#"
+            class="block px-4 py-2 hover:bg-gray-700 transition"
+            @click.prevent="filtrarPorCategoria(categoria.nombre)"
+          >
+            {{ categoria.nombre }}
+          </a>
         </div>
       </div>
-    </transition>
-  </nav>
+    </div>
 
-  <div class="h-20"></div>
+    <!-- Modal de Login -->
+    <LoginModal
+      :show="showLoginModal"
+      @close="showLoginModal = false"
+    />
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { useAuthStore } from "@/stores/authStore";
-import { useOrderStore } from "@/stores/orderStore";
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import { useOrderStore } from '@/stores/orderStore';
+import { useProductStore } from '@/stores/productStore';
+import api from '@/services/api';
+import router from '@/router';
+import LoginModal from '@/components/home/LoginModal.vue';
 
 const authStore = useAuthStore();
 const orderStore = useOrderStore();
-const isOpen = ref(false);
+const productStore = useProductStore();
+const showLoginModal = ref(false);
+const categorias = ref([]);
 
-const toggleMenu = () => {
-  isOpen.value = !isOpen.value;
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push('/');
 };
+
+// Cargar categorías desde la base de datos
+const fetchCategorias = async () => {
+  try {
+    const response = await api.get('/categorias');
+    categorias.value = response.data;
+  } catch (error) {
+    console.error('Error al cargar categorías:', error);
+  }
+};
+
+// Filtrar productos por categoría
+const filtrarPorCategoria = (categoriaNombre) => {
+  productStore.setCategory(categoriaNombre);
+  router.push('/');
+};
+
 onMounted(() => {
-  console.log(authStore.isAuthenticated);
-  console.log(authStore.isCliente);
+  fetchCategorias();
 });
 </script>
-
-<style>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-</style>

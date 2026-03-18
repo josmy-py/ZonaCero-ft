@@ -36,15 +36,40 @@ export const useAuthStore = defineStore('auth', {
         this.token = data.access_token
         this.user = data.user
 
-        // Redirección según rol
+        // Redirección según rol - Si es admin o vendedor ir al dashboard
         if (this.isAdmin || this.isVendedor) {
-          router.push('/dashboard')
+          router.push('/admin/dashboard')
         } else {
           router.push('/')
         }
 
       } catch (error) {
         console.error('Error en login:', error)
+        throw error
+      }
+    },
+
+    // Login con Google (simulado - en producción usaría Firebase Auth)
+    async loginWithGoogle(googleUser) {
+      try {
+        // En una implementación real, esto enviaría el token de Google al backend
+        // y el backend lo validaría con Google
+        const { data } = await api.post('/auth/google', {
+          token: googleUser.tokenId
+        })
+
+        this.token = data.access_token
+        this.user = data.user
+
+        // Redirección según rol
+        if (this.isAdmin || this.isVendedor) {
+          router.push('/admin/dashboard')
+        } else {
+          router.push('/')
+        }
+
+      } catch (error) {
+        console.error('Error en login con Google:', error)
         throw error
       }
     },

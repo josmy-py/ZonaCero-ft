@@ -51,6 +51,10 @@ const router = createRouter({
       meta:{ requiresAuth:true, role:['ADMIN','VENDEDOR'] },
 
       children:[
+        {
+          path:'',
+          redirect: '/admin/dashboard'
+        },
 
         {
           path:'dashboard',
